@@ -8,4 +8,6 @@ from yawp.dict import serbocroatian
 
 definitions = serbocroatian.get('biti')
 for d in definitions:
+    print(d.word)
     print(d)
+    print(d.inflection)
