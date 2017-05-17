@@ -84,16 +84,124 @@ class Definition:
         if match_start >= 0:
             self.add_inflection(form, inflected_word)
 
-    def add_inflection(self, form, inflected_word):
-        #TODO: PJC just discovered that one form here could end up in multiple verb forms in the conjugation table. Need to rework.
-        form_name = self.get_inflection_form_name(form)
-        self.inflection[form_name] = inflected_word
 
-    def get_inflection_form_name(self, form):
-        if form == 'p.va': return 'Past verbal adverb'
-        elif form == 'pr.va': return 'Present verbal adverb'           
-        elif form == 'pr.1s': return 'First person singular present'
-        return form
+    def add_inflection(self, form, inflected_word):
+        if form == 'p.va': 
+            self.inflection['Past verbal adverb'] = inflected_word
+        elif form == 'pr.va': 
+            self.inflection['Present verbal adverb'] = inflected_word
+        elif form == 'pr.1s': 
+            self.inflection['First person singular present'] = inflected_word
+        elif form == 'pr.2s': 
+            self.inflection['Second person singular present'] = inflected_word
+        elif form == 'pr.3s': 
+            self.inflection['Third person singular present'] = inflected_word
+        elif form == 'pr.1p': 
+            self.inflection['First person plural present'] = inflected_word
+        elif form == 'pr.2p': 
+            self.inflection['Second person plural present'] = inflected_word
+        elif form == 'pr.3p': 
+            self.inflection['Third person plural present'] = inflected_word
+        elif form == 'f1.hr': 
+            self.inflection['First person singular future I (Croatian)'] = inflected_word + ' ću'
+            self.inflection['Second person singular future I (Croatian)'] = inflected_word + ' ćeš'
+            self.inflection['Third person singular future I (Croatian)'] = inflected_word + ' će'
+            self.inflection['First person plural future I (Croatian)'] = inflected_word + ' ćemo'
+            self.inflection['Second person plural future I (Croatian)'] = inflected_word + ' ćete'
+            self.inflection['Third person plural future I (Croatian)'] = inflected_word + ' će'
+        elif form == 'f1.stem': 
+            self.inflection['First person singular future I'] = inflected_word + 'ću'
+            self.inflection['Second person singular future I'] = inflected_word + 'ćeš'
+            self.inflection['Third person singular future I'] = inflected_word + 'će'
+            self.inflection['First person plural future I'] = inflected_word + 'ćemo'
+            self.inflection['Second person plural future I'] = inflected_word + 'ćete'
+            self.inflection['Third person plural future I'] = inflected_word + 'će'
+        elif form == 'impf.1s': 
+            self.inflection['First person singular past imperfect'] = inflected_word
+        elif form == 'impf.2s': 
+            self.inflection['Second person singular past imperfect'] = inflected_word
+        elif form == 'impf.3s': 
+            self.inflection['Third person singular past imperfect'] = inflected_word
+        elif form == 'impf.1p': 
+            self.inflection['First person plural past imperfect'] = inflected_word
+        elif form == 'impf.2p': 
+            self.inflection['Second person plural past imperfect'] = inflected_word
+        elif form == 'impf.3p': 
+            self.inflection['Third person plural past imperfect'] = inflected_word
+        elif form == 'a.1s': 
+            self.inflection['First person singular past aorist'] = inflected_word
+        elif form == 'a.2s': 
+            self.inflection['Second person singular past aorist'] = inflected_word
+        elif form == 'a.3s': 
+            self.inflection['Third person singular past aorist'] = inflected_word
+        elif form == 'a.1p': 
+            self.inflection['First person plural past aorist'] = inflected_word
+        elif form == 'a.2p': 
+            self.inflection['Second person plural past aorist'] = inflected_word
+        elif form == 'a.3p': 
+            self.inflection['Third person plural past aorist'] = inflected_word
+        elif form == 'impt.2s': 
+            self.inflection['Second person singular imperative'] = inflected_word
+        elif form == 'impt.1p': 
+            self.inflection['First person plural imperative'] = inflected_word
+        elif form == 'impt.2p': 
+            self.inflection['Second person plural imperative'] = inflected_word
+        elif form == 'app.ms': 
+            self.inflection['Active past participle masculine singular'] = inflected_word
+            self.inflection['First person masculine singular future II'] = 'budem ' + inflected_word
+            self.inflection['Second person masculine singular future II'] = 'budeš ' + inflected_word
+            self.inflection['Third person masculine singular future II'] = 'bude ' + inflected_word
+            self.inflection['First person masculine singular past perfect'] = inflected_word + ' sam'
+            self.inflection['Second person masculine singular past perfect'] = inflected_word + ' si'
+            self.inflection['Third person masculine singular past perfect'] = inflected_word + ' je'
+            self.inflection['First person masculine singular past pluperfect'] = 'bio sam ' + inflected_word
+            self.inflection['Second person masculine singular past pluperfect'] = 'bio si ' + inflected_word
+            self.inflection['Third person masculine singular past pluperfect'] = 'bio je ' + inflected_word
+            self.inflection['First person masculine singular conditional I'] = inflected_word + ' bih'
+            self.inflection['Second person masculine singular conditional I'] = inflected_word + ' bi'
+            self.inflection['Third person masculine singular conditional I'] = inflected_word + ' bi'
+            self.inflection['First person masculine singular conditional II'] = 'bio bih ' + inflected_word
+            self.inflection['Second person masculine singular conditional II'] = 'bio bi ' + inflected_word
+            self.inflection['Third person masculine singular conditional II'] = 'bio bi ' + inflected_word
+        elif form == 'app.fs': 
+            self.inflection['Active past participle feminine singular'] = inflected_word
+            self.inflection['First person feminine singular future II'] = 'budem ' + inflected_word
+            self.inflection['Second person feminine singular future II'] = 'budeš ' + inflected_word
+            self.inflection['Third person feminine singular future II'] = 'bude ' + inflected_word
+            self.inflection['First person feminine singular past perfect'] = inflected_word + ' sam'
+            self.inflection['Second person feminine singular past perfect'] = inflected_word + ' si'
+            self.inflection['Third person feminine singular past perfect'] = inflected_word + ' je'
+            self.inflection['First person feminine singular past pluperfect'] = 'bila sam ' + inflected_word
+            self.inflection['Second person feminine singular past pluperfect'] = 'bila si ' + inflected_word
+            self.inflection['Third person feminine singular past pluperfect'] = 'bila je ' + inflected_word
+            self.inflection['First person feminine singular conditional I'] = inflected_word + ' bih'
+            self.inflection['Second person feminine singular conditional I'] = inflected_word + ' bi'
+            self.inflection['Third person feminine singular conditional I'] = inflected_word + ' bi'
+            self.inflection['First person feminine singular conditional II'] = 'bila bih ' + inflected_word
+            self.inflection['Second person feminine singular conditional II'] = 'bila bi ' + inflected_word
+            self.inflection['Third person feminine singular conditional II'] = 'bila bi ' + inflected_word
+        elif form == 'app.ns': 
+            self.inflection['Active past participle neuter singular'] = inflected_word
+            self.inflection['First person neuter singular future II'] = 'budem ' + inflected_word
+            self.inflection['Second person neuter singular future II'] = 'budeš ' + inflected_word
+            self.inflection['Third person neuter singular future II'] = 'bude ' + inflected_word
+            self.inflection['First person neuter singular past perfect'] = inflected_word + ' sam'
+            self.inflection['Second person neuter singular past perfect'] = inflected_word + ' si'
+            self.inflection['Third person neuter singular past perfect'] = inflected_word + ' je'
+            self.inflection['First person neuter singular past pluperfect'] = 'bilo sam ' + inflected_word
+            self.inflection['Second person neuter singular past pluperfect'] = 'bilo si ' + inflected_word
+            self.inflection['Third person neuter singular past pluperfect'] = 'bilo je ' + inflected_word
+            self.inflection['First person neuter singular conditional I'] = inflected_word + ' bih'
+            self.inflection['Second person neuter singular conditional I'] = inflected_word + ' bi'
+            self.inflection['Third person neuter singular conditional I'] = inflected_word + ' bi'
+            self.inflection['First person neuter singular conditional II'] = 'bilo bih ' + inflected_word
+            self.inflection['Second person neuter singular conditional II'] = 'bilo bi ' + inflected_word
+            self.inflection['Third person neuter singular conditional II'] = 'bilo bi ' + inflected_word
+        #TODO: more
+        # https://en.wiktionary.org/wiki/Template:sh-conj
+        # https://en.wiktionary.org/wiki/biti?action=raw
+        # https://en.wiktionary.org/wiki/biti#Serbo-Croatian
+        
 
     def __str__(self):
         return "{0}: {1}".format(self.part_of_speech, self.meanings)
