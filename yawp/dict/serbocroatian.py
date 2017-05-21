@@ -4,8 +4,10 @@ from yawp.parser import YAWiktionaryParser
 LANG_NAME = 'Serbo-Croatian'
 PARTS_OF_SPEECH = ['Verb', 'Noun', 'Adjective', 'Adverb', 'Preposition', 'Interjection', 'Pronoun', 'Conjunction', 'Letter', 'Particle']
 INFLECTIONS = ['Conjugation', 'Declension']
+NOUN_CASES = ['Nominative', 'Genitive', 'Dative', 'Accusative', 'Vocative', 'Locative', 'Instrumental']
 
 _conjugation_regex = re.compile(r"^\|(?P<form>\w+\.\w+)=(?P<inflected_word>.*)$", re.RegexFlag.MULTILINE)
+_declension_regex = re.compile(r"\|(?P<inflected_word1>.*?)\|(?P<inflected_word2>.*)$", re.RegexFlag.MULTILINE)
 
 def get(word):
     p = YAWiktionaryParser()
@@ -28,6 +30,7 @@ def parse_term(term):
             headings.append(heading)
         elif heading.title in INFLECTIONS:
             headings.append(heading)
+        #TODO: I would like to grab Derived terms and Related terms later as well.
     
     if len(headings) > 0:
         definitions.append(Definition(term.word, headings))
@@ -61,8 +64,19 @@ class Definition:
             if heading.title == 'Conjugation':
                 self.parse_conjugation(heading)
             elif heading.title == 'Declension':
-                pass # TODO: PJC
+                self.parse_declension(heading)
     
+
+    def parse_declension(self, heading):
+        lines = heading.text.splitlines()
+        match_count = 0
+        for line in lines:
+            match = _declension_regex.search(line)
+            if match:
+                self.inflection[NOUN_CASES[match_count] + ' singular'] = match.groupdict()['inflected_word1']
+                self.inflection[NOUN_CASES[match_count] + ' plural'] = match.groupdict()['inflected_word2']
+                match_count += 1
+
 
     def parse_conjugation(self, heading):
         self.inflection['Infinitive'] = self.word
@@ -90,6 +104,8 @@ class Definition:
             self.inflection['Past verbal adverb'] = inflected_word
         elif form == 'pr.va': 
             self.inflection['Present verbal adverb'] = inflected_word
+        elif form == 'vn':
+            self.inflection['Verbal noun'] = inflected_word
         elif form == 'pr.1s': 
             self.inflection['First person singular present'] = inflected_word
         elif form == 'pr.2s': 
@@ -197,10 +213,71 @@ class Definition:
             self.inflection['First person neuter singular conditional II'] = 'bilo bih ' + inflected_word
             self.inflection['Second person neuter singular conditional II'] = 'bilo bi ' + inflected_word
             self.inflection['Third person neuter singular conditional II'] = 'bilo bi ' + inflected_word
-        #TODO: more
-        # https://en.wiktionary.org/wiki/Template:sh-conj
-        # https://en.wiktionary.org/wiki/biti?action=raw
-        # https://en.wiktionary.org/wiki/biti#Serbo-Croatian
+        elif form == 'app.mp': 
+            self.inflection['Active past participle masculine plural'] = inflected_word
+            self.inflection['First person masculine plural future II'] = 'budemo ' + inflected_word
+            self.inflection['Second person masculine plural future II'] = 'budete ' + inflected_word
+            self.inflection['Third person masculine plural future II'] = 'budu ' + inflected_word
+            self.inflection['First person masculine plural past perfect'] = inflected_word + ' smo'
+            self.inflection['Second person masculine plural past perfect'] = inflected_word + ' ste'
+            self.inflection['Third person masculine plural past perfect'] = inflected_word + ' su'
+            self.inflection['First person masculine plural past pluperfect'] = 'bili smo ' + inflected_word
+            self.inflection['Second person masculine plural past pluperfect'] = 'bili ste ' + inflected_word
+            self.inflection['Third person masculine plural past pluperfect'] = 'bili su ' + inflected_word
+            self.inflection['First person masculine plural conditional I'] = inflected_word + ' bismo'
+            self.inflection['Second person masculine plural conditional I'] = inflected_word + ' biste'
+            self.inflection['Third person masculine plural conditional I'] = inflected_word + ' bi'
+            self.inflection['First person masculine plural conditional II'] = 'bili bismo ' + inflected_word
+            self.inflection['Second person masculine plural conditional II'] = 'bili biste ' + inflected_word
+            self.inflection['Third person masculine plural conditional II'] = 'bili bi ' + inflected_word
+        elif form == 'app.fp': 
+            self.inflection['Active past participle feminine plural'] = inflected_word
+            self.inflection['First person feminine plural future II'] = 'budemo ' + inflected_word
+            self.inflection['Second person feminine plural future II'] = 'budete ' + inflected_word
+            self.inflection['Third person feminine plural future II'] = 'budu ' + inflected_word
+            self.inflection['First person feminine plural past perfect'] = inflected_word + ' smo'
+            self.inflection['Second person feminine plural past perfect'] = inflected_word + ' ste'
+            self.inflection['Third person feminine plural past perfect'] = inflected_word + ' su'
+            self.inflection['First person feminine plural past pluperfect'] = 'bile smo ' + inflected_word
+            self.inflection['Second person feminine plural past pluperfect'] = 'bile ste ' + inflected_word
+            self.inflection['Third person feminine plural past pluperfect'] = 'bile su ' + inflected_word
+            self.inflection['First person feminine plural conditional I'] = inflected_word + ' bismo'
+            self.inflection['Second person feminine plural conditional I'] = inflected_word + ' biste'
+            self.inflection['Third person feminine plural conditional I'] = inflected_word + ' bi'
+            self.inflection['First person feminine plural conditional II'] = 'bile bismo ' + inflected_word
+            self.inflection['Second person feminine plural conditional II'] = 'bile biste ' + inflected_word
+            self.inflection['Third person feminine plural conditional II'] = 'bile bi ' + inflected_word
+        elif form == 'app.np': 
+            self.inflection['Active past participle neuter plural'] = inflected_word
+            self.inflection['First person neuter plural future II'] = 'budemo ' + inflected_word
+            self.inflection['Second person neuter plural future II'] = 'budete ' + inflected_word
+            self.inflection['Third person neuter plural future II'] = 'budu ' + inflected_word
+            self.inflection['First person neuter plural past perfect'] = inflected_word + ' smo'
+            self.inflection['Second person neuter plural past perfect'] = inflected_word + ' ste'
+            self.inflection['Third person neuter plural past perfect'] = inflected_word + ' su'
+            self.inflection['First person neuter plural past pluperfect'] = 'bila smo ' + inflected_word
+            self.inflection['Second person neuter plural past pluperfect'] = 'bila ste ' + inflected_word
+            self.inflection['Third person neuter plural past pluperfect'] = 'bila su ' + inflected_word
+            self.inflection['First person neuter plural conditional I'] = inflected_word + ' bismo'
+            self.inflection['Second person neuter plural conditional I'] = inflected_word + ' biste'
+            self.inflection['Third person neuter plural conditional I'] = inflected_word + ' bi'
+            self.inflection['First person neuter plural conditional II'] = 'bila bismo ' + inflected_word
+            self.inflection['Second person neuter plural conditional II'] = 'bila biste ' + inflected_word
+            self.inflection['Third person neuter plural conditional II'] = 'bila bi ' + inflected_word
+        elif form == 'ppp.ms':
+            self.inflection['Passive past participle masculine singular'] = inflected_word
+        elif form == 'ppp.fs':
+            self.inflection['Passive past participle feminine singular'] = inflected_word
+        elif form == 'ppp.ns':
+            self.inflection['Passive past participle neuter singular'] = inflected_word
+        elif form == 'ppp.mp':
+            self.inflection['Passive past participle masculine plural'] = inflected_word
+        elif form == 'ppp.fp':
+            self.inflection['Passive past participle feminine plural'] = inflected_word
+        elif form == 'ppp.np':
+            self.inflection['Passive past participle neuter plural'] = inflected_word
+        else:
+            print('Unknown form: ', form, ' ', inflected_word, ' (', self.word, ' ')
         
 
     def __str__(self):
