@@ -1,3 +1,4 @@
+import json
 import re
 from yawp.parser import YAWiktionaryParser
 
@@ -17,6 +18,18 @@ def get(word):
             if term.language == LANG_NAME:
                 return parse_term(term)
     return None
+
+def get_json(word):
+    defs = get(word)
+    if defs:
+        json_defs = "["
+        for d in defs:
+            json_defs += d.toJSON() + ","
+        json_defs = json_defs.rstrip(",")
+        json_defs += "]"
+        return json_defs
+    return ""
+
 
 def parse_term(term):
     definitions = []
@@ -42,12 +55,12 @@ class Definition:
 
     def __init__(self, word, headings):
         self.word = word
-        self.headings = headings
+        #self.headings = headings
         self.part_of_speech = ''
         self.meanings = []
         self.inflection = {}
 
-        for heading in self.headings:
+        for heading in headings:
             self.parse_heading(heading)
     
     def parse_heading(self, heading):
@@ -278,7 +291,15 @@ class Definition:
             self.inflection['Passive past participle neuter plural'] = inflected_word
         else:
             print('Unknown form: ', form, ' ', inflected_word, ' (', self.word, ' ')
-        
+
+    def _try(self, o): 
+        try: 
+            return o.__dict__ 
+        except: 
+            return str(o)
+
+    def toJSON(self):
+        return json.dumps(self, default=lambda o: self._try(o), sort_keys=True, indent=0, separators=(',',':')).replace('\n', '')
 
     def __str__(self):
         return "{0}: {1}".format(self.part_of_speech, self.meanings)
