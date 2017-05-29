@@ -8,7 +8,10 @@ INFLECTIONS = ['Conjugation', 'Declension']
 NOUN_CASES = ['Nominative', 'Genitive', 'Dative', 'Accusative', 'Vocative', 'Locative', 'Instrumental']
 
 _conjugation_regex = re.compile(r"^\|(?P<form>\w+\.\w+)=(?P<inflected_word>.*)$", re.RegexFlag.MULTILINE)
-_declension_regex = re.compile(r"\|(?P<inflected_word1>.*?)\|(?P<inflected_word2>.*)$", re.RegexFlag.MULTILINE)
+_noun_declension_regex = re.compile(r"\|(?P<inflected_word1>.*?)\|(?P<inflected_word2>.*)$", re.RegexFlag.MULTILINE)
+_adj_full_declension_regex = re.compile(r"sh-adj-full\|(?P<root1>\w+)\|\w+\|(?P<root2>\w+)\|\w+", re.RegexFlag.MULTILINE)
+_adj_def_declension_regex = re.compile(r"sh-adj-def\|(?P<root>\w+)\|\w+", re.RegexFlag.MULTILINE)
+#TODO: PJC There are other declension templates, see https://en.wiktionary.org/wiki/Category:Serbo-Croatian_declension-table_templates
 
 def get(word):
     p = YAWiktionaryParser()
@@ -77,14 +80,84 @@ class Definition:
             if heading.title == 'Conjugation':
                 self.parse_conjugation(heading)
             elif heading.title == 'Declension':
-                self.parse_declension(heading)
+                if self.part_of_speech == 'Noun':
+                    self.parse_noun_declension(heading)
+                elif self.part_of_speech == 'Adjective':
+                    self.parse_adj_declension(heading)
+                elif self.part_of_speech == 'Pronoun':
+                    pass #TODO:
+                else:
+                    pass # TODO: log unknown declension type
     
 
-    def parse_declension(self, heading):
+    def parse_adj_declension(self, heading):
+        match = _adj_full_declension_regex.search(heading.text)
+        if match:
+            self.parse_adj_full_declension(match.groupdict()['root1'],match.groupdict()['root2'])
+        else:
+            match = _adj_def_declension_regex.search(heading.text)
+            if match:
+                self.parse_adj_def_declension(match.groupdict()['root'])
+            #TODO: more else
+
+    
+    def parse_adj_full_declension(self, root1, root2):
+        #TODO: indefinite
+        self.parse_adj_def_declension(root1)
+        #TODO: comparative
+        #TODO: superlative
+    
+    def parse_adj_def_declension(self, root):
+        self.inflection['Definite nominative masculine singular'] = root + 'i'
+        self.inflection['Definite nominative feminine singular'] = root + 'a'
+        self.inflection['Definite nominative neuter singular'] = root + 'o'
+        self.inflection['Definite genitive masculine singular'] = root + 'og(a)'
+        self.inflection['Definite genitive feminine singular'] = root + 'e'
+        self.inflection['Definite genitive neuter singular'] = root + 'og(a)'
+        self.inflection['Definite dative masculine singular'] = root + 'om(u)'
+        self.inflection['Definite dative feminine singular'] = root + 'oj'
+        self.inflection['Definite dative neuter singular'] = root + 'om(u)'
+        self.inflection['Definite accusative masculine inanimate singular'] = root + 'i'
+        self.inflection['Definite accusative masculine animate singular'] = root + 'og(a)'
+        self.inflection['Definite accusative feminine singular'] = root + 'u'
+        self.inflection['Definite accusative neuter singular'] = root + 'o'
+        self.inflection['Definite vocative masculine singular'] = root + 'i'
+        self.inflection['Definite vocative feminine singular'] = root + 'a'
+        self.inflection['Definite vocative neuter singular'] = root + 'o'
+        self.inflection['Definite locative masculine singular'] = root + 'om(u)'
+        self.inflection['Definite locative feminine singular'] = root + 'oj'
+        self.inflection['Definite locative neuter singular'] = root + 'om(u)'
+        self.inflection['Definite instrumental masculine singular'] = root + 'im'
+        self.inflection['Definite instrumental feminine singular'] = root + 'om'
+        self.inflection['Definite instrumental neuter singular'] = root + 'im'
+        self.inflection['Definite nominative masculine plural'] = root + 'i'
+        self.inflection['Definite nominative feminine plural'] = root + 'e'
+        self.inflection['Definite nominative neuter plural'] = root + 'a'
+        self.inflection['Definite genitive masculine plural'] = root + 'ih'
+        self.inflection['Definite genitive feminine plural'] = root + 'ih'
+        self.inflection['Definite genitive neuter plural'] = root + 'ih'
+        self.inflection['Definite dative masculine plural'] = root + 'im(a)'
+        self.inflection['Definite dative feminine plural'] = root + 'im(a)'
+        self.inflection['Definite dative neuter plural'] = root + 'im(a)'
+        self.inflection['Definite accusative masculine plural'] = root + 'e'
+        self.inflection['Definite accusative feminine plural'] = root + 'e'
+        self.inflection['Definite accusative neuter plural'] = root + 'a'
+        self.inflection['Definite vocative masculine plural'] = root + 'i'
+        self.inflection['Definite vocative feminine plural'] = root + 'e'
+        self.inflection['Definite vocative neuter plural'] = root + 'a'
+        self.inflection['Definite locative masculine plural'] = root + 'im(a)'
+        self.inflection['Definite locative feminine plural'] = root + 'im(a)'
+        self.inflection['Definite locative neuter plural'] = root + 'im(a)'
+        self.inflection['Definite instrumental masculine plural'] = root + 'im(a)'
+        self.inflection['Definite instrumental feminine plural'] = root + 'im(a)'
+        self.inflection['Definite instrumental neuter plural'] = root + 'im(a)'
+
+
+    def parse_noun_declension(self, heading):
         lines = heading.text.splitlines()
         match_count = 0
         for line in lines:
-            match = _declension_regex.search(line)
+            match = _noun_declension_regex.search(line)
             if match:
                 self.inflection[NOUN_CASES[match_count] + ' singular'] = match.groupdict()['inflected_word1']
                 self.inflection[NOUN_CASES[match_count] + ' plural'] = match.groupdict()['inflected_word2']
