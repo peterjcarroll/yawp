@@ -3,7 +3,7 @@ import re
 from yawp.parser import YAWiktionaryParser
 
 LANG_NAME = 'Serbo-Croatian'
-PARTS_OF_SPEECH = ['Verb', 'Noun', 'Adjective', 'Adverb', 'Preposition', 'Interjection', 'Pronoun', 'Conjunction', 'Letter', 'Particle']
+PARTS_OF_SPEECH = ['Verb', 'Noun', 'Adjective', 'Adverb', 'Preposition', 'Interjection', 'Pronoun', 'Conjunction', 'Letter', 'Particle', 'Proper Noun']
 INFLECTIONS = ['Conjugation', 'Declension']
 NOUN_CASES = ['Nominative', 'Genitive', 'Dative', 'Accusative', 'Vocative', 'Locative', 'Instrumental']
 
@@ -11,6 +11,7 @@ _conjugation_regex = re.compile(r"^\|(?P<form>\w+\.\w+)=(?P<inflected_word>.*)$"
 _noun_declension_regex = re.compile(r"\|(?P<inflected_word1>.*?)\|(?P<inflected_word2>.*)$", re.RegexFlag.MULTILINE)
 _adj_full_declension_regex = re.compile(r"sh-adj-full\|(?P<root1>\w+)\|\w+\|(?P<root2>\w+)\|\w+", re.RegexFlag.MULTILINE)
 _adj_def_declension_regex = re.compile(r"sh-adj-def\|(?P<root>\w+)\|\w+", re.RegexFlag.MULTILINE)
+_adj_defindef_declension_regex = re.compile(r"sh-adj-defindef\|(?P<root>\w+)\|\w+", re.RegexFlag.MULTILINE)
 #TODO: PJC There are other declension templates, see https://en.wiktionary.org/wiki/Category:Serbo-Croatian_declension-table_templates
 
 def get(word):
@@ -98,15 +99,72 @@ class Definition:
             match = _adj_def_declension_regex.search(heading.text)
             if match:
                 self.parse_adj_def_declension(match.groupdict()['root'])
+            else:
+                match = _adj_defindef_declension_regex.search(heading.text)
+                if match:
+                    self.parse_adj_defindef_declension(match.groupdict()['root'])
             #TODO: more else
 
     
     def parse_adj_full_declension(self, root1, root2):
-        #TODO: indefinite
+        self.parse_adj_indef_declension(root1)
         self.parse_adj_def_declension(root1)
         #TODO: comparative
         #TODO: superlative
+
     
+    def parse_adj_defindef_declension(self, root):
+        self.parse_adj_indef_declension(root)
+        self.parse_adj_def_declension(root)        
+
+    
+    def parse_adj_indef_declension(self, root):
+        self.inflection['Indefinite nominative masculine singular'] = self.word
+        self.inflection['Indefinite nominative feminine singular'] = root + 'a'
+        self.inflection['Indefinite nominative neuter singular'] = root + 'o'
+        self.inflection['Indefinite genitive masculine singular'] = root + 'a'
+        self.inflection['Indefinite genitive feminine singular'] = root + 'e'
+        self.inflection['Indefinite genitive neuter singular'] = root + 'a'
+        self.inflection['Indefinite dative masculine singular'] = root + 'u'
+        self.inflection['Indefinite dative feminine singular'] = root + 'oj'
+        self.inflection['Indefinite dative neuter singular'] = root + 'u'
+        self.inflection['Indefinite accusative masculine inanimate singular'] = self.word
+        self.inflection['Indefinite accusative feminine singular'] = root + 'u'
+        self.inflection['Indefinite accusative neuter singular'] = root + 'o'
+        self.inflection['Indefinite accusative masculine animate singular'] = root + 'a'
+        self.inflection['Indefinite vocative masculine singular'] = self.word
+        self.inflection['Indefinite vocative feminine singular'] = root + 'a'
+        self.inflection['Indefinite vocative neuter singular'] = root + 'o'
+        self.inflection['Indefinite locative masculine singular'] = root + 'u'
+        self.inflection['Indefinite locative feminine singular'] = root + 'oj'
+        self.inflection['Indefinite locative neuter singular'] = root + 'u'
+        self.inflection['Indefinite instrumental masculine singular'] = root + 'im'
+        self.inflection['Indefinite instrumental feminine singular'] = root + 'om'
+        self.inflection['Indefinite instrumental neuter singular'] = root + 'im'
+        self.inflection['Indefinite nominative masculine plural'] = root + 'i'
+        self.inflection['Indefinite nominative feminine plural'] = root + 'e'
+        self.inflection['Indefinite nominative neuter plural'] = root + 'a'
+        self.inflection['Indefinite genitive masculine plural'] = root + 'ih'
+        self.inflection['Indefinite genitive feminine plural'] = root + 'ih'
+        self.inflection['Indefinite genitive neuter plural'] = root + 'ih'
+        self.inflection['Indefinite dative masculine plural'] = root + 'im(a)'
+        self.inflection['Indefinite dative feminine plural'] = root + 'im(a)'
+        self.inflection['Indefinite dative neuter plural'] = root + 'im(a)'
+        self.inflection['Indefinite accusative masculine plural'] = root + 'e'
+        self.inflection['Indefinite accusative feminine plural'] = root + 'e'
+        self.inflection['Indefinite accusative neuter plural'] = root + 'a'
+        self.inflection['Indefinite vocative masculine plural'] = root + 'i'
+        self.inflection['Indefinite vocative feminine plural'] = root + 'e'
+        self.inflection['Indefinite vocative neuter plural'] = root + 'a'
+        self.inflection['Indefinite locative masculine plural'] = root + 'im(a)'
+        self.inflection['Indefinite locative feminine plural'] = root + 'im(a)'
+        self.inflection['Indefinite locative neuter plural'] = root + 'im(a)'
+        self.inflection['Indefinite instrumental masculine plural'] = root + 'im(a)'
+        self.inflection['Indefinite instrumental feminine plural'] = root + 'im(a)'
+        self.inflection['Indefinite instrumental neuter plural'] = root + 'im(a)'
+
+    
+
     def parse_adj_def_declension(self, root):
         self.inflection['Definite nominative masculine singular'] = root + 'i'
         self.inflection['Definite nominative feminine singular'] = root + 'a'
