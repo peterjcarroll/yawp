@@ -109,7 +109,7 @@ class Definition:
     def parse_adj_full_declension(self, root1, root2):
         self.parse_adj_indef_declension(root1)
         self.parse_adj_def_declension(root1)
-        #TODO: comparative
+        self.parse_adj_comparative_declension(root2)
         #TODO: superlative
 
     
@@ -209,6 +209,53 @@ class Definition:
         self.inflection['Definite instrumental masculine plural'] = root + 'im(a)'
         self.inflection['Definite instrumental feminine plural'] = root + 'im(a)'
         self.inflection['Definite instrumental neuter plural'] = root + 'im(a)'
+
+
+    def parse_adj_comparative_declension(self, root):
+        self.inflection['Comparative nominative masculine singular'] = root + 'i'
+        self.inflection['Comparative nominative feminine singular'] = root + 'a'
+        self.inflection['Comparative nominative neuter singular'] = root + 'o'
+        self.inflection['Comparative genitive masculine singular'] = root + 'og(a)'
+        self.inflection['Comparative genitive feminine singular'] = root + 'e'
+        self.inflection['Comparative genitive neuter singular'] = root + 'og(a)'
+        self.inflection['Comparative dative masculine singular'] = root + 'om(u)'
+        self.inflection['Comparative dative feminine singular'] = root + 'oj'
+        self.inflection['Comparative dative neuter singular'] = root + 'om(u)'
+        self.inflection['Comparative accusative masculine inanimate singular'] = root + 'i'
+        self.inflection['Comparative accusative feminine singular'] = root + 'u'
+        self.inflection['Comparative accusative neuter singular'] = root + 'o'
+        self.inflection['Comparative accusative masculine animate singular'] = root + 'og(a)'
+        self.inflection['Comparative vocative masculine singular'] = root + 'i'
+        self.inflection['Comparative vocative feminine singular'] = root + 'a'
+        self.inflection['Comparative vocative neuter singular'] = root + 'o'
+        self.inflection['Comparative locative masculine singular'] = root + 'om(u)'
+        self.inflection['Comparative locative feminine singular'] = root + 'oj'
+        self.inflection['Comparative locative neuter singular'] = root + 'om(u)'
+        self.inflection['Comparative instrumental masculine singular'] = root + 'im'
+        self.inflection['Comparative instrumental feminine singular'] = root + 'om'
+        self.inflection['Comparative instrumental neuter singular'] = root + 'im'
+        self.inflection['Comparative nominative masculine plural'] = root + 'i'
+        self.inflection['Comparative nominative feminine plural'] = root + 'e'
+        self.inflection['Comparative nominative neuter plural'] = root + 'a'
+        self.inflection['Comparative genitive masculine plural'] = root + 'ih'
+        self.inflection['Comparative genitive feminine plural'] = root + 'ih'
+        self.inflection['Comparative genitive neuter plural'] = root + 'ih'
+        self.inflection['Comparative dative masculine plural'] = root + 'im(a)'
+        self.inflection['Comparative dative feminine plural'] = root + 'im(a)'
+        self.inflection['Comparative dative neuter plural'] = root + 'im(a)'
+        self.inflection['Comparative accusative masculine plural'] = root + 'e'
+        self.inflection['Comparative accusative feminine plural'] = root + 'e'
+        self.inflection['Comparative accusative neuter plural'] = root + 'a'
+        self.inflection['Comparative vocative masculine plural'] = root + 'i'
+        self.inflection['Comparative vocative feminine plural'] = root + 'e'
+        self.inflection['Comparative vocative neuter plural'] = root + 'a'
+        self.inflection['Comparative locative masculine plural'] = root + 'im(a)'
+        self.inflection['Comparative locative feminine plural'] = root + 'im(a)'
+        self.inflection['Comparative locative neuter plural'] = root + 'im(a)'
+        self.inflection['Comparative instrumental masculine plural'] = root + 'im(a)'
+        self.inflection['Comparative instrumental feminine plural'] = root + 'im(a)'
+        self.inflection['Comparative instrumental neuter plural'] = root + 'im(a)'
+
 
 
     def parse_noun_declension(self, heading):
