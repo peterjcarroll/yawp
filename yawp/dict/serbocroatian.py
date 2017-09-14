@@ -7,6 +7,8 @@ PARTS_OF_SPEECH = ['Verb', 'Noun', 'Adjective', 'Adverb', 'Preposition', 'Interj
 INFLECTIONS = ['Conjugation', 'Declension']
 NOUN_CASES = ['Nominative', 'Genitive', 'Dative', 'Accusative', 'Vocative', 'Locative', 'Instrumental']
 
+_inflection_template_regex = re.compile(r"{{(?P<template_name>[\w\-]+)(?P<params>(\|([\w\-\=]+))*)}}", re.RegexFlag.MULTILINE)
+
 _conjugation_regex = re.compile(r"^\|(?P<form>\w+\.\w+)=(?P<inflected_word>.*)$", re.RegexFlag.MULTILINE)
 _noun_declension_regex = re.compile(r"\|(?P<inflected_word1>.*?)\|(?P<inflected_word2>.*)$", re.RegexFlag.MULTILINE)
 _adj_full_declension_regex = re.compile(r"sh-adj-full\|(?P<root1>\w+)\|\w+\|(?P<root2>\w+)\|\w+", re.RegexFlag.MULTILINE)
@@ -481,3 +483,31 @@ class Definition:
 
     def __str__(self):
         return "{0}: {1}".format(self.part_of_speech, self.meanings)
+
+
+class Inflection:
+    
+    def __init__(self, word, heading):
+        self.word = word
+        self.type = heading.title
+
+        match = _inflection_template_regex.search(heading.text)
+        if match:
+            self.template_name = match.groupdict()['template_name']
+            self.template_params = self.parse_template_params(match.groupdict()['params'])
+            #TODO: PJC retrieve template from https://en.wiktionary.org/wiki/Template:sh-adj-full?action=raw (sh-adj-full is replaced by self.template_name) and parse it
+            #TODO: PJC template parsing should probably go in parser.py
+        
+    
+    def parse_template_params(self, params_text):
+        template_params = {}
+        param_list = params_text.split('|')
+        param_num = 1
+        for param in param_list:
+            if '=' in param:
+                named_param = param.split('=')
+                template_params[param[0]] = param[1]
+            else:
+                template_params[str(param_num)] = param
+                param_num += 1
+        return template_params
