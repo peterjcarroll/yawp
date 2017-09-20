@@ -1,6 +1,6 @@
 import json
 import re
-from yawp.parser import YAWiktionaryParser
+from yawp.parser import YAWiktionaryParser, Template
 
 LANG_NAME = 'Serbo-Croatian'
 PARTS_OF_SPEECH = ['Verb', 'Noun', 'Adjective', 'Adverb', 'Preposition', 'Interjection', 'Pronoun', 'Conjunction', 'Letter', 'Particle', 'Proper Noun']
@@ -94,18 +94,19 @@ class Definition:
     
 
     def parse_adj_declension(self, heading):
-        match = _adj_full_declension_regex.search(heading.text)
-        if match:
-            self.parse_adj_full_declension(match.groupdict()['root1'],match.groupdict()['root2'])
-        else:
-            match = _adj_def_declension_regex.search(heading.text)
-            if match:
-                self.parse_adj_def_declension(match.groupdict()['root'])
-            else:
-                match = _adj_defindef_declension_regex.search(heading.text)
-                if match:
-                    self.parse_adj_defindef_declension(match.groupdict()['root'])
-            #TODO: more else
+        self.inflection = Inflection(self.word, heading)
+        # match = _adj_full_declension_regex.search(heading.text)
+        # if match:
+        #     self.parse_adj_full_declension(match.groupdict()['root1'],match.groupdict()['root2'])
+        # else:
+        #     match = _adj_def_declension_regex.search(heading.text)
+        #     if match:
+        #         self.parse_adj_def_declension(match.groupdict()['root'])
+        #     else:
+        #         match = _adj_defindef_declension_regex.search(heading.text)
+        #         if match:
+        #             self.parse_adj_defindef_declension(match.groupdict()['root'])
+        #     #TODO: more else
 
     
     def parse_adj_full_declension(self, root1, root2):
@@ -495,8 +496,10 @@ class Inflection:
         if match:
             self.template_name = match.groupdict()['template_name']
             self.template_params = self.parse_template_params(match.groupdict()['params'])
-            #TODO: PJC retrieve template from https://en.wiktionary.org/wiki/Template:sh-adj-full?action=raw (sh-adj-full is replaced by self.template_name) and parse it
+            #TODO: PJC retrieve template from https://en.wiktionary.org/wiki/Template:sh-adj-full?action=raw (sh-adj-full is replaced by self.template_name) and parse it            
             #TODO: PJC template parsing should probably go in parser.py
+            self.template = Template.get(self.template_name)
+            #TODO: PJC use template to get word forms
         
     
     def parse_template_params(self, params_text):

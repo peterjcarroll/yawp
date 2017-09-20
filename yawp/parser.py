@@ -64,6 +64,22 @@ class Heading:
         self.text = text
         #print(text)
 
+class Template:
+
+    def __init__(self, text, name):
+        self.name = name
+        self.parse(text)
+
+    def parse(self, text):
+        print(text)
+        #TODO: PJC here
+
+    def get(name, site='en'):
+        r = requests.get('https://{0}.wiktionary.org/wiki/Template:{1}?action=raw'.format(site, name))
+        if r.status_code == 200:
+            return Template(r.text, name)
+        return None
+        
 
 class YAWiktionaryParser:
 
